@@ -6,7 +6,7 @@ A production-ready Slack Bot API example using `effect-slack` and `@effect/platf
 
 - **Slack Events API** - Handle messages, app mentions, and more
 - **Slash Commands** - Respond to custom commands (`/greet`, `/ping`)
-- **Request Verification** - Secure webhook handling with HMAC-SHA256
+- **Request Verification** - HMAC-SHA256 signature verification utilities included
 - **OpenAPI Documentation** - Auto-generated Swagger UI at `/docs`
 - **Type-safe** - Full TypeScript with Effect Schema validation
 - **Observability** - Built-in spans for tracing

@@ -61,7 +61,7 @@ export class SlashCommandPayload extends Schema.Class<SlashCommandPayload>("Slas
   user_id: Schema.String,
   user_name: Schema.String,
   command: Schema.String,
-  text: Schema.String,
+  text: Schema.optional(Schema.String),
   response_url: Schema.String,
   trigger_id: Schema.String
 }) {}

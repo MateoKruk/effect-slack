@@ -30,6 +30,13 @@ const ApiLive = HttpApiBuilder.api(SlackBotApi).pipe(
 // Server Configuration
 // =============================================================================
 
+const HttpServerLive = Layer.unwrapEffect(
+  Effect.gen(function* () {
+    const config = yield* AppConfig
+    return BunHttpServer.layer({ port: config.port })
+  })
+)
+
 const ServerLive = HttpApiBuilder.serve(HttpMiddleware.logger).pipe(
   // Add Swagger documentation at /docs
   Layer.provide(HttpApiSwagger.layer({ path: "/docs" })),
@@ -40,7 +47,7 @@ const ServerLive = HttpApiBuilder.serve(HttpMiddleware.logger).pipe(
   // Log server address on startup
   HttpServer.withLogAddress,
   // Configure the HTTP server with port from config
-  Layer.provide(BunHttpServer.layer({ port: 3000 })),
+  Layer.provide(HttpServerLive),
   // Provide Slack configuration from environment
   Layer.provide(SlackConfig.fromEnv),
   // Provide the app configuration
