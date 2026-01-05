@@ -37,3 +37,17 @@ export const runSlackEffect = <A>(
 export const runSlackEffectExit = <A>(
   program: Effect.Effect<A, SlackError | ConfigError.ConfigError, SlackService>
 ) => program.pipe(Effect.provide(SlackLive), Effect.runPromiseExit)
+
+/**
+ * Run a simple Effect program (no SlackService required).
+ * Useful for logging and other side effects.
+ */
+export const runEffect = <A, E>(program: Effect.Effect<A, E, never>): Promise<A> =>
+  Effect.runPromise(program)
+
+/**
+ * Run a simple Effect synchronously.
+ * Useful for startup logging.
+ */
+export const runEffectSync = <A>(program: Effect.Effect<A, never, never>): A =>
+  Effect.runSync(program)

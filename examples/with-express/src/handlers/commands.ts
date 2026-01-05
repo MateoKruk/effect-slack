@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from "express"
 import { Effect, Exit } from "effect"
 import { SlackService } from "effect-slack"
-import { runSlackEffectExit } from "../slack.js"
+import { runSlackEffectExit, runEffect } from "../slack.js"
 
 const router = Router()
 
@@ -26,11 +26,16 @@ interface SlashCommandPayload {
 router.post("/slack/commands", async (req: Request, res: Response) => {
   const payload = req.body as SlashCommandPayload
 
-  console.log(`Received slash command: ${payload.command}`, {
-    user: payload.user_name,
-    channel: payload.channel_name,
-    text: payload.text
-  })
+  await runEffect(
+    Effect.log("Received slash command").pipe(
+      Effect.annotateLogs({
+        command: payload.command,
+        user: payload.user_name,
+        channel: payload.channel_name,
+        text: payload.text
+      })
+    )
+  )
 
   switch (payload.command) {
     case "/greet": {
@@ -52,7 +57,11 @@ router.post("/slack/commands", async (req: Request, res: Response) => {
           text: "Greeting sent!"
         })
       } else {
-        console.error("Failed to send greeting:", exit.cause)
+        await runEffect(
+          Effect.logError("Failed to send greeting").pipe(
+            Effect.annotateLogs({ cause: exit.cause.toString() })
+          )
+        )
         res.json({
           response_type: "ephemeral",
           text: "Sorry, I couldn't send the greeting. Please try again."
@@ -71,7 +80,9 @@ router.post("/slack/commands", async (req: Request, res: Response) => {
     }
 
     default: {
-      console.log(`Unknown command: ${payload.command}`)
+      await runEffect(
+        Effect.logWarning("Unknown command").pipe(Effect.annotateLogs({ command: payload.command }))
+      )
       res.json({
         response_type: "ephemeral",
         text: `Unknown command: ${payload.command}. Available commands: /greet, /ping`

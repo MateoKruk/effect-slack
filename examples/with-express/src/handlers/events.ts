@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from "express"
 import { Effect, Exit } from "effect"
 import { SlackService } from "effect-slack"
-import { runSlackEffectExit } from "../slack.js"
+import { runSlackEffectExit, runEffect } from "../slack.js"
 
 const router = Router()
 
@@ -36,7 +36,7 @@ router.post("/slack/events", async (req: Request, res: Response) => {
 
   // Handle URL verification challenge
   if (payload.type === "url_verification") {
-    console.log("Received URL verification challenge")
+    await runEffect(Effect.log("Received URL verification challenge"))
     res.json({ challenge: payload.challenge })
     return
   }
@@ -45,10 +45,15 @@ router.post("/slack/events", async (req: Request, res: Response) => {
   if (payload.type === "event_callback") {
     const { event } = payload
 
-    console.log(`Received event: ${event.type}`, {
-      channel: event.channel,
-      user: event.user
-    })
+    await runEffect(
+      Effect.log("Received event").pipe(
+        Effect.annotateLogs({
+          eventType: event.type,
+          channel: event.channel,
+          user: event.user
+        })
+      )
+    )
 
     // Respond to app mentions using Effect
     if (event.type === "app_mention") {
@@ -65,7 +70,11 @@ router.post("/slack/events", async (req: Request, res: Response) => {
       const exit = await runSlackEffectExit(program)
 
       if (Exit.isFailure(exit)) {
-        console.error("Failed to respond to mention:", exit.cause)
+        await runEffect(
+          Effect.logError("Failed to respond to mention").pipe(
+            Effect.annotateLogs({ cause: exit.cause.toString() })
+          )
+        )
         // Still return 200 to Slack to avoid retries
       }
     }
