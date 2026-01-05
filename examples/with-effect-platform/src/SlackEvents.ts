@@ -40,9 +40,7 @@ export const EventsLive = HttpApiBuilder.group(SlackBotApi, "events", (handlers)
                 thread_ts: event.ts
               })
               .pipe(
-                Effect.tapError((error) =>
-                  Effect.logError("Failed to post message", { error })
-                ),
+                Effect.tapError((error) => Effect.logError("Failed to post message", { error })),
                 Effect.catchAll(
                   (error) =>
                     new SlackApiError({

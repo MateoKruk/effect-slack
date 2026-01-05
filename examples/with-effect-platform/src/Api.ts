@@ -16,9 +16,7 @@ import {
 
 const EventsGroup = HttpApiGroup.make("events").add(
   HttpApiEndpoint.post("handleEvent", "/slack/events")
-    .setPayload(
-      SlackEventPayload.pipe(HttpApiSchema.withEncoding({ kind: "Json" }))
-    )
+    .setPayload(SlackEventPayload.pipe(HttpApiSchema.withEncoding({ kind: "Json" })))
     .addSuccess(ChallengeResponse)
     .addSuccess(EventAckResponse)
     .addError(SignatureVerificationError)
@@ -31,9 +29,7 @@ const EventsGroup = HttpApiGroup.make("events").add(
 
 const CommandsGroup = HttpApiGroup.make("commands").add(
   HttpApiEndpoint.post("handleCommand", "/slack/commands")
-    .setPayload(
-      SlashCommandPayload.pipe(HttpApiSchema.withEncoding({ kind: "UrlParams" }))
-    )
+    .setPayload(SlashCommandPayload.pipe(HttpApiSchema.withEncoding({ kind: "UrlParams" })))
     .addSuccess(SlashCommandResponse)
     .addError(SignatureVerificationError)
     .addError(SlackApiError)

@@ -26,9 +26,7 @@ export const CommandsLive = HttpApiBuilder.group(SlackBotApi, "commands", (handl
                 text: `Hello <@${payload.user_id}>! :wave: ${payload.text ? `You said: "${payload.text}"` : "How can I help you today?"}`
               })
               .pipe(
-                Effect.tapError((error) =>
-                  Effect.logError("Failed to post greeting", { error })
-                ),
+                Effect.tapError((error) => Effect.logError("Failed to post greeting", { error })),
                 Effect.catchAll(
                   (error) =>
                     new SlackApiError({

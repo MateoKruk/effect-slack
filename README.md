@@ -44,8 +44,8 @@ Effect.runPromise(program)
 
 Check out the [examples](./examples) folder for complete, runnable examples:
 
-| Example | Description |
-| ------- | ----------- |
+| Example                                                 | Description                                                                                  |
+| ------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | [with-effect-platform](./examples/with-effect-platform) | Slack Bot API using `@effect/platform-bun` with Events API, slash commands, and Swagger docs |
 
 ## Custom Configuration

@@ -60,12 +60,12 @@ ngrok http 3000
 
 ## API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/slack/events` | POST | Slack Events API webhook |
-| `/slack/commands` | POST | Slash command handler |
-| `/health` | GET | Health check |
-| `/docs` | GET | Swagger UI documentation |
+| Endpoint          | Method | Description              |
+| ----------------- | ------ | ------------------------ |
+| `/slack/events`   | POST   | Slack Events API webhook |
+| `/slack/commands` | POST   | Slash command handler    |
+| `/health`         | GET    | Health check             |
+| `/docs`           | GET    | Swagger UI documentation |
 
 ## Project Structure
 
@@ -120,20 +120,22 @@ const program = Effect.gen(function* () {
 
 ## Environment Variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `SLACK_TOKEN` | Yes | Bot User OAuth Token (`xoxb-...`) |
-| `SLACK_SIGNING_SECRET` | Yes | Signing Secret for request verification |
-| `PORT` | No | Server port (default: 3000) |
+| Variable               | Required | Description                             |
+| ---------------------- | -------- | --------------------------------------- |
+| `SLACK_TOKEN`          | Yes      | Bot User OAuth Token (`xoxb-...`)       |
+| `SLACK_SIGNING_SECRET` | Yes      | Signing Secret for request verification |
+| `PORT`                 | No       | Server port (default: 3000)             |
 
 ## Available Commands
 
 ### `/greet [message]`
+
 Posts a greeting message to the channel.
 
 Example: `/greet Hello everyone!`
 
 ### `/ping`
+
 Returns a simple "Pong!" response (ephemeral).
 
 ## Development

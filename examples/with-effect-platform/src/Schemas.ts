@@ -21,7 +21,9 @@ export class SlackMessageEvent extends Schema.Class<SlackMessageEvent>("SlackMes
   channel_type: Schema.optional(Schema.String)
 }) {}
 
-export class SlackAppMentionEvent extends Schema.Class<SlackAppMentionEvent>("SlackAppMentionEvent")({
+export class SlackAppMentionEvent extends Schema.Class<SlackAppMentionEvent>(
+  "SlackAppMentionEvent"
+)({
   type: Schema.Literal("app_mention"),
   channel: Schema.String,
   user: Schema.String,
@@ -74,7 +76,9 @@ export class ChallengeResponse extends Schema.Class<ChallengeResponse>("Challeng
 
 export class EventAckResponse extends Schema.Class<EventAckResponse>("EventAckResponse")({}) {}
 
-export class SlashCommandResponse extends Schema.Class<SlashCommandResponse>("SlashCommandResponse")({
+export class SlashCommandResponse extends Schema.Class<SlashCommandResponse>(
+  "SlashCommandResponse"
+)({
   response_type: Schema.optional(Schema.Literal("in_channel", "ephemeral")),
   text: Schema.optional(Schema.String),
   blocks: Schema.optional(Schema.Array(Schema.Unknown))
