@@ -4,5 +4,5 @@
   "semi": false,
   "singleQuote": false,
   "trailingComma": "none",
-  "ignorePatterns": ["dist", "src/generated"]
+  "ignorePatterns": ["dist", "src/generated", "CHANGELOG.md"]
 }
