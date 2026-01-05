@@ -15,7 +15,6 @@ This example is for teams who:
 
 - **Express Routes** - Standard Express routing you know and love
 - **Effect for Slack** - Type-safe Slack API calls via `effect-slack`
-- **Effect Logging** - Structured logging with `Effect.log` and annotations
 - **Simple Bridge** - `runSlackEffect()` helper converts Effect to Promise
 - **Error Handling** - Graceful error handling with `Exit.isFailure`
 
@@ -132,19 +131,15 @@ src/
 Use `runSlackEffectExit()` for graceful error handling:
 
 ```typescript
-import { Effect, Exit } from "effect"
-import { runSlackEffectExit, runEffect } from "../slack.js"
+import { Exit } from "effect"
+import { runSlackEffectExit } from "../slack.js"
 
 const exit = await runSlackEffectExit(program)
 
 if (Exit.isSuccess(exit)) {
   res.json({ ok: true })
 } else {
-  await runEffect(
-    Effect.logError("Slack error").pipe(
-      Effect.annotateLogs({ cause: exit.cause.toString() })
-    )
-  )
+  console.error("Slack error:", exit.cause)
   res.status(500).json({ error: "Failed to send message" })
 }
 ```

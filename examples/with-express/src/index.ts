@@ -1,9 +1,7 @@
 import express from "express"
-import { Effect } from "effect"
 import healthRouter from "./handlers/health.js"
 import eventsRouter from "./handlers/events.js"
 import commandsRouter from "./handlers/commands.js"
-import { runEffectSync } from "./slack.js"
 
 const app = express()
 
@@ -21,14 +19,8 @@ app.use("/slack", commandsRouter)
 // Start server
 const PORT = process.env["PORT"] ?? 3000
 app.listen(PORT, () => {
-  runEffectSync(
-    Effect.log("Server started").pipe(
-      Effect.annotateLogs({
-        port: PORT,
-        health: `http://localhost:${PORT}/health`,
-        events: `http://localhost:${PORT}/slack/events`,
-        commands: `http://localhost:${PORT}/slack/commands`
-      })
-    )
-  )
+  console.log(`Server running on http://localhost:${PORT}`)
+  console.log(`Health check: http://localhost:${PORT}/health`)
+  console.log(`Slack events: http://localhost:${PORT}/slack/events`)
+  console.log(`Slack commands: http://localhost:${PORT}/slack/commands`)
 })

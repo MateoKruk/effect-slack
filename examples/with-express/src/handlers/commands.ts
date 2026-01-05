@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from "express"
 import { Effect, Exit } from "effect"
 import { SlackService } from "effect-slack"
-import { runSlackEffectExit, runEffect } from "../slack.js"
+import { runSlackEffectExit } from "../slack.js"
 
 const router = Router()
 
@@ -26,22 +26,20 @@ interface SlashCommandPayload {
 router.post("/slack/commands", async (req: Request, res: Response) => {
   const payload = req.body as SlashCommandPayload
 
-  await runEffect(
-    Effect.log("Received slash command").pipe(
-      Effect.annotateLogs({
-        command: payload.command,
-        user: payload.user_name,
-        channel: payload.channel_name,
-        text: payload.text
-      })
-    )
-  )
+  console.log(`Received command: ${payload.command}`, {
+    user: payload.user_name,
+    channel: payload.channel_name
+  })
 
   switch (payload.command) {
     case "/greet": {
-      // Post a greeting message to the channel using Effect
       const program = Effect.gen(function* () {
         const slack = yield* SlackService
+
+        yield* Effect.log("Sending greeting").pipe(
+          Effect.annotateLogs({ channel: payload.channel_id, user: payload.user_id })
+        )
+
         yield* slack.postMessage({
           channel: payload.channel_id,
           text: `Hello <@${payload.user_id}>! ${payload.text ? `You said: "${payload.text}"` : "How can I help you today?"}`
@@ -51,41 +49,24 @@ router.post("/slack/commands", async (req: Request, res: Response) => {
       const exit = await runSlackEffectExit(program)
 
       if (Exit.isSuccess(exit)) {
-        // Ephemeral response only visible to the user
-        res.json({
-          response_type: "ephemeral",
-          text: "Greeting sent!"
-        })
+        res.json({ response_type: "ephemeral", text: "Greeting sent!" })
       } else {
-        await runEffect(
-          Effect.logError("Failed to send greeting").pipe(
-            Effect.annotateLogs({ cause: exit.cause.toString() })
-          )
-        )
-        res.json({
-          response_type: "ephemeral",
-          text: "Sorry, I couldn't send the greeting. Please try again."
-        })
+        console.error("Failed to send greeting:", exit.cause)
+        res.json({ response_type: "ephemeral", text: "Sorry, couldn't send the greeting." })
       }
       return
     }
 
     case "/ping": {
-      // Simple response, no Slack API call needed
-      res.json({
-        response_type: "ephemeral",
-        text: "Pong!"
-      })
+      res.json({ response_type: "ephemeral", text: "Pong!" })
       return
     }
 
     default: {
-      await runEffect(
-        Effect.logWarning("Unknown command").pipe(Effect.annotateLogs({ command: payload.command }))
-      )
+      console.log(`Unknown command: ${payload.command}`)
       res.json({
         response_type: "ephemeral",
-        text: `Unknown command: ${payload.command}. Available commands: /greet, /ping`
+        text: `Unknown command: ${payload.command}. Available: /greet, /ping`
       })
     }
   }

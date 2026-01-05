@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from "express"
 import { Effect, Exit } from "effect"
 import { SlackService } from "effect-slack"
-import { runSlackEffectExit, runEffect } from "../slack.js"
+import { runSlackEffectExit } from "../slack.js"
 
 const router = Router()
 
@@ -36,7 +36,7 @@ router.post("/slack/events", async (req: Request, res: Response) => {
 
   // Handle URL verification challenge
   if (payload.type === "url_verification") {
-    await runEffect(Effect.log("Received URL verification challenge"))
+    console.log("Received URL verification challenge")
     res.json({ challenge: payload.challenge })
     return
   }
@@ -45,20 +45,17 @@ router.post("/slack/events", async (req: Request, res: Response) => {
   if (payload.type === "event_callback") {
     const { event } = payload
 
-    await runEffect(
-      Effect.log("Received event").pipe(
-        Effect.annotateLogs({
-          eventType: event.type,
-          channel: event.channel,
-          user: event.user
-        })
-      )
-    )
+    console.log(`Received event: ${event.type}`, { channel: event.channel, user: event.user })
 
     // Respond to app mentions using Effect
     if (event.type === "app_mention") {
       const program = Effect.gen(function* () {
         const slack = yield* SlackService
+
+        yield* Effect.log("Responding to app mention").pipe(
+          Effect.annotateLogs({ channel: event.channel, user: event.user })
+        )
+
         yield* slack.postMessage({
           channel: event.channel,
           text: `Hello <@${event.user}>! You mentioned me. How can I help?`,
@@ -66,25 +63,17 @@ router.post("/slack/events", async (req: Request, res: Response) => {
         })
       })
 
-      // Run the Effect and handle errors gracefully
       const exit = await runSlackEffectExit(program)
 
       if (Exit.isFailure(exit)) {
-        await runEffect(
-          Effect.logError("Failed to respond to mention").pipe(
-            Effect.annotateLogs({ cause: exit.cause.toString() })
-          )
-        )
-        // Still return 200 to Slack to avoid retries
+        console.error("Failed to respond to mention:", exit.cause)
       }
     }
 
-    // Always acknowledge quickly to prevent Slack retries
     res.json({})
     return
   }
 
-  // Unknown event type - acknowledge anyway
   res.json({})
 })
 
