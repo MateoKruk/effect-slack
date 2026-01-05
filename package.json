@@ -73,7 +73,10 @@
     "effect": "^3.0.0"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,md}": "oxlint"
+    "*.{js,jsx,ts,tsx,md}": [
+      "oxlint",
+      "oxfmt --write"
+    ]
   },
   "engines": {
     "node": ">=18"
