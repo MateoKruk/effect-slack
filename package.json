@@ -72,7 +72,7 @@
     "effect": "^3.0.0"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "oxlint"
+    "*.{js,jsx,ts,tsx,md}": "oxlint"
   },
   "engines": {
     "node": ">=18"
