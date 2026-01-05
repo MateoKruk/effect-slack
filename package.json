@@ -48,7 +48,8 @@
     "prepublishOnly": "bun run build",
     "prepare": "husky",
     "changeset": "changeset",
-    "release": "changeset publish"
+    "release": "changeset publish",
+    "example:platform": "cd examples/with-effect-platform && bun run dev"
   },
   "dependencies": {
     "@slack/web-api": "^7.13.0"
@@ -72,7 +73,10 @@
     "effect": "^3.0.0"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,md}": "oxlint"
+    "*.{js,jsx,ts,tsx,md}": [
+      "oxlint",
+      "oxfmt --write"
+    ]
   },
   "engines": {
     "node": ">=18"
