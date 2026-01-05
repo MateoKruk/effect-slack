@@ -49,7 +49,8 @@
     "prepare": "husky",
     "changeset": "changeset",
     "release": "changeset publish",
-    "example:platform": "cd examples/with-effect-platform && bun run dev"
+    "example:platform": "cd examples/with-effect-platform && bun run dev",
+    "example:express": "cd examples/with-express && bun run dev"
   },
   "dependencies": {
     "@slack/web-api": "^7.13.0"
