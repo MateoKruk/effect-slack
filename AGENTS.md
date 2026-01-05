@@ -8,7 +8,7 @@ This file provides guidance to AI coding agents when working with code in this r
 bun run build          # Compile TypeScript
 bun run dev            # Watch mode compilation
 bun run test           # Run all tests
-bunx vitest run <pat>  # Run tests matching pattern
+bun run test <pattern> # Run tests matching pattern
 bun run typecheck      # Type check without emit
 bun run lint           # Lint with oxlint
 bun run lint:fix       # Fix lint issues
