@@ -2,6 +2,8 @@
 
 A Slack bot example showing how to integrate `effect-slack` into an Express application. This demonstrates gradual Effect adoption - using Effect only for Slack API calls while keeping Express for HTTP handling.
 
+> **Note:** This is a simplified example for learning purposes. It does not implement Slack request signature verification. For production use, you must verify requests using the `X-Slack-Signature` header and your Signing Secret. See the [Slack documentation](https://api.slack.com/authentication/verifying-requests-from-slack) for details.
+
 ## Why Express + Effect?
 
 This example is for teams who:
@@ -55,12 +57,11 @@ ngrok http 3000
    - `commands`
 4. Install the app to your workspace
 5. Copy the **Bot User OAuth Token** to your `.env`
-6. Under **Basic Information**, copy the **Signing Secret** to your `.env`
-7. Under **Event Subscriptions**:
+6. Under **Event Subscriptions**:
    - Enable events
    - Set Request URL: `https://your-ngrok-url.ngrok.io/slack/events`
    - Subscribe to: `app_mention`
-8. Under **Slash Commands**, create:
+7. Under **Slash Commands**, create:
    - `/greet` - Request URL: `https://your-ngrok-url.ngrok.io/slack/commands`
    - `/ping` - Request URL: `https://your-ngrok-url.ngrok.io/slack/commands`
 
