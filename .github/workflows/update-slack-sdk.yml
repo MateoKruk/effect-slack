@@ -147,7 +147,7 @@ jobs:
           # Determine bump type based on semver diff
           if [ "$LATEST_MAJOR" -gt "$CURRENT_MAJOR" ]; then
             BUMP_TYPE="major"
-          elif [ "$LATEST_MINOR" -gt "$CURRENT_MINOR" ]; then
+          elif [ "$LATEST_MAJOR" -eq "$CURRENT_MAJOR" ] && [ "$LATEST_MINOR" -gt "$CURRENT_MINOR" ]; then
             BUMP_TYPE="minor"
           else
             BUMP_TYPE="patch"
