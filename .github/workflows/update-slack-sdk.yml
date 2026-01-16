@@ -35,7 +35,13 @@ jobs:
           CURRENT_METHOD_COUNT=$(jq -r '.methodCount' src/generated/_metadata.json)
           LATEST_VERSION=$(npm view @slack/web-api version)
 
-          # Validate version matches stable semver pattern (no pre-release)
+          # Validate current version from _metadata.json
+          if ! [[ "$CURRENT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Invalid current version format in _metadata.json: $CURRENT_VERSION"
+            exit 1
+          fi
+
+          # Validate latest version matches stable semver pattern (no pre-release)
           if ! [[ "$LATEST_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Error: Invalid version format from npm: $LATEST_VERSION"
             exit 1
@@ -45,12 +51,18 @@ jobs:
           echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
           echo "current_method_count=$CURRENT_METHOD_COUNT" >> $GITHUB_OUTPUT
 
+          # Determine which version is newer using semantic version comparison
+          NEWER_VERSION=$(printf '%s\n%s\n' "$CURRENT_VERSION" "$LATEST_VERSION" | sort -V | tail -n1)
+
           if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
             echo "needs_update=false" >> $GITHUB_OUTPUT
             echo "✓ Already up to date: $CURRENT_VERSION"
-          else
+          elif [ "$NEWER_VERSION" = "$LATEST_VERSION" ]; then
             echo "needs_update=true" >> $GITHUB_OUTPUT
             echo "⬆ Update available: $CURRENT_VERSION → $LATEST_VERSION"
+          else
+            echo "needs_update=false" >> $GITHUB_OUTPUT
+            echo "ℹ Skipping: npm returned older version $LATEST_VERSION (current: $CURRENT_VERSION)"
           fi
 
       - name: Check for existing PR
@@ -82,11 +94,22 @@ jobs:
           NEW_METHOD_COUNT=$(jq -r '.methodCount' src/generated/_metadata.json)
           echo "new_method_count=$NEW_METHOD_COUNT" >> $GITHUB_OUTPUT
 
+          # Validate NEW_METHOD_COUNT is a valid integer
+          if ! [[ "$NEW_METHOD_COUNT" =~ ^[0-9]+$ ]]; then
+            echo "Error: new_method_count ('$NEW_METHOD_COUNT') is not a valid integer" >&2
+            exit 1
+          fi
+
           OLD_COUNT="${{ steps.check.outputs.current_method_count }}"
           if [ -z "$OLD_COUNT" ]; then
             echo "Error: current_method_count is not set" >&2
             exit 1
           fi
+          if ! [[ "$OLD_COUNT" =~ ^[0-9]+$ ]]; then
+            echo "Error: current_method_count ('$OLD_COUNT') is not a valid integer" >&2
+            exit 1
+          fi
+
           DIFF=$((NEW_METHOD_COUNT - OLD_COUNT))
 
           if [ $DIFF -gt 0 ]; then
@@ -199,5 +222,6 @@ jobs:
           } > /tmp/pr-body.md
 
           gh pr create \
+            --base main \
             --title "chore: update @slack/web-api to ${{ steps.check.outputs.latest_version }}" \
             --body-file /tmp/pr-body.md
