@@ -110,10 +110,8 @@ const program = Effect.gen(function* () {
   yield* slack.postMessage({ channel, text })
 }).pipe(
   Effect.catchTags({
-    SlackRateLimitedError: (e) =>
-      Effect.log(`Rate limited for ${e.retryAfter}s`),
-    SlackPlatformError: (e) =>
-      Effect.logError(`Slack error: ${e.error}`)
+    SlackRateLimitedError: (e) => Effect.log(`Rate limited for ${e.retryAfter}s`),
+    SlackPlatformError: (e) => Effect.logError(`Slack error: ${e.error}`)
   })
 )
 ```

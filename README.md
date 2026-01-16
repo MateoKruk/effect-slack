@@ -86,14 +86,12 @@ const program = Effect.gen(function* () {
   return yield* slack.postMessage({ channel: "C123", text: "Hi" })
 }).pipe(
   Effect.catchTags({
-    SlackRateLimitedError: (e) =>
-      Effect.log(`Rate limited, retry in ${e.retryAfter}s`),
+    SlackRateLimitedError: (e) => Effect.log(`Rate limited, retry in ${e.retryAfter}s`),
     SlackPlatformError: (e) =>
       e.isAuthError
         ? Effect.logError(`Auth failed: ${e.error}`)
         : Effect.logError(`API error: ${e.error}`),
-    SlackHttpError: (e) =>
-      Effect.logError(`HTTP ${e.statusCode}: ${e.statusMessage}`)
+    SlackHttpError: (e) => Effect.logError(`HTTP ${e.statusCode}: ${e.statusMessage}`)
   }),
   Effect.provide(SlackService.Live)
 )
@@ -144,8 +142,8 @@ import { SlackConfig } from "effect-slack"
 const config = SlackConfig.make({
   token: Redacted.make("xoxb-..."),
   options: {
-    retryConfig: { retries: 0 },      // Disable SDK retries
-    rejectRateLimitedCalls: true       // Don't auto-handle rate limits
+    retryConfig: { retries: 0 }, // Disable SDK retries
+    rejectRateLimitedCalls: true // Don't auto-handle rate limits
   }
 })
 ```
@@ -242,12 +240,7 @@ const program = Effect.gen(function* () {
   yield* slack.postMessage({ channel: "#general", text: "Hello!" })
 })
 
-Effect.runPromise(
-  program.pipe(
-    Effect.provide(SlackService.Live),
-    Effect.provide(TracingLive)
-  )
-)
+Effect.runPromise(program.pipe(Effect.provide(SlackService.Live), Effect.provide(TracingLive)))
 ```
 
 ## Available Methods
@@ -281,9 +274,7 @@ const mockClient = {
 } as unknown as WebClient
 
 // Create test layer
-const TestLayer = SlackService.Default.pipe(
-  Layer.provide(SlackClient.make(mockClient))
-)
+const TestLayer = SlackService.Default.pipe(Layer.provide(SlackClient.make(mockClient)))
 
 // Use in tests
 const testProgram = Effect.gen(function* () {
@@ -312,7 +303,9 @@ Generated services follow a consistent pattern:
 
 ```typescript
 // Each method is wrapped with Effect.tryPromise, error mapping, and tracing
-const postMessage = (args: ChatPostMessageArguments): Effect.Effect<ChatPostMessageResponse, SlackError> =>
+const postMessage = (
+  args: ChatPostMessageArguments
+): Effect.Effect<ChatPostMessageResponse, SlackError> =>
   Effect.tryPromise({
     try: () => client.chat.postMessage(args),
     catch: mapSlackError

@@ -76,11 +76,7 @@ import { SlackService, type SlackError } from "effect-slack"
 
 export const runSlackEffect = <A>(
   program: Effect.Effect<A, SlackError, SlackService>
-): Promise<A> =>
-  program.pipe(
-    Effect.provide(SlackService.Live),
-    Effect.runPromise
-  )
+): Promise<A> => program.pipe(Effect.provide(SlackService.Live), Effect.runPromise)
 ```
 
 Use it in Express routes:
