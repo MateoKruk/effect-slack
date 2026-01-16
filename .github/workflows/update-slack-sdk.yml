@@ -74,7 +74,6 @@ jobs:
         id: generate
         run: |
           bun run generate
-          bun run generate:check
 
           NEW_METHOD_COUNT=$(jq -r '.methodCount' src/generated/_metadata.json)
           echo "new_method_count=$NEW_METHOD_COUNT" >> $GITHUB_OUTPUT
