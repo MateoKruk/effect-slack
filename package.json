@@ -65,7 +65,7 @@
     "effect": "^3.19.14",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
-    "oxfmt": "^0.21.0",
+    "oxfmt": "^0.24.0",
     "oxlint": "^1.36.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.16"
