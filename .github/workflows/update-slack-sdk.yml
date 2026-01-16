@@ -31,8 +31,8 @@ jobs:
           CURRENT_METHOD_COUNT=$(jq -r '.methodCount' src/generated/_metadata.json)
           LATEST_VERSION=$(npm view @slack/web-api version)
 
-          # Validate version matches semver pattern
-          if ! [[ "$LATEST_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
+          # Validate version matches stable semver pattern (no pre-release)
+          if ! [[ "$LATEST_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Error: Invalid version format from npm: $LATEST_VERSION"
             exit 1
           fi
@@ -74,6 +74,7 @@ jobs:
         id: generate
         run: |
           bun run generate
+          bun run generate:check
 
           NEW_METHOD_COUNT=$(jq -r '.methodCount' src/generated/_metadata.json)
           echo "new_method_count=$NEW_METHOD_COUNT" >> $GITHUB_OUTPUT
@@ -132,31 +133,35 @@ jobs:
             METHOD_INFO="Method count: ${{ steps.check.outputs.current_method_count }} → ${{ steps.generate.outputs.new_method_count }} ($METHOD_DIFF)"
           fi
 
+          {
+            echo '## Summary'
+            echo ''
+            echo 'Automated update of `@slack/web-api` dependency.'
+            echo ''
+            echo '- **Version**: ${{ steps.check.outputs.current_version }} → ${{ steps.check.outputs.latest_version }}'
+            echo "- $METHOD_INFO"
+            echo ''
+            echo '## Changes'
+            echo ''
+            echo '- Updated `@slack/web-api` dependency'
+            echo '- Regenerated Effect service wrappers'
+            echo '- Created changeset for versioning'
+            echo ''
+            echo '## Verification'
+            echo ''
+            echo 'All CI checks passed:'
+            echo '- [x] Lint'
+            echo '- [x] Format'
+            echo '- [x] Typecheck'
+            echo '- [x] Tests'
+            echo '- [x] Build'
+            echo ''
+            echo 'See [Slack Web API releases](https://github.com/slackapi/node-slack-sdk/releases) for changelog.'
+            echo ''
+            echo '---'
+            echo '*Automated by Update Slack SDK workflow*'
+          } > /tmp/pr-body.md
+
           gh pr create \
             --title "chore: update @slack/web-api to ${{ steps.check.outputs.latest_version }}" \
-            --body "## Summary
-
-          Automated update of \`@slack/web-api\` dependency.
-
-          - **Version**: ${{ steps.check.outputs.current_version }} → ${{ steps.check.outputs.latest_version }}
-          - $METHOD_INFO
-
-          ## Changes
-
-          - Updated \`@slack/web-api\` dependency
-          - Regenerated Effect service wrappers
-          - Created changeset for versioning
-
-          ## Verification
-
-          All CI checks passed:
-          - [x] Lint
-          - [x] Format
-          - [x] Typecheck
-          - [x] Tests
-          - [x] Build
-
-          See [Slack Web API releases](https://github.com/slackapi/node-slack-sdk/releases) for changelog.
-
-          ---
-          *Automated by Update Slack SDK workflow*"
+            --body-file /tmp/pr-body.md
