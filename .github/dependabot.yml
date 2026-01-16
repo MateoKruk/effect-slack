@@ -1,0 +1,47 @@
+version: 2
+updates:
+  # Main package dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      effect:
+        patterns:
+          - "effect"
+          - "@effect/*"
+      development:
+        patterns:
+          - "*"
+        dependency-type: "development"
+        exclude-patterns:
+          - "effect"
+          - "@effect/*"
+
+  # Example: Effect Platform
+  - package-ecosystem: "npm"
+    directory: "/examples/with-effect-platform"
+    schedule:
+      interval: "weekly"
+    groups:
+      effect:
+        patterns:
+          - "effect"
+          - "@effect/*"
+
+  # Example: Express
+  - package-ecosystem: "npm"
+    directory: "/examples/with-express"
+    schedule:
+      interval: "weekly"
+    groups:
+      effect:
+        patterns:
+          - "effect"
+          - "@effect/*"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
