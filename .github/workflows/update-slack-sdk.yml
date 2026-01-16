@@ -67,7 +67,7 @@ jobs:
 
       - name: Update dependency
         if: steps.check.outputs.needs_update == 'true' && steps.existing-pr.outputs.exists == 'false'
-        run: bun add @slack/web-api@${{ steps.check.outputs.latest_version }}
+        run: bun add "@slack/web-api@${{ steps.check.outputs.latest_version }}"
 
       - name: Regenerate services
         if: steps.check.outputs.needs_update == 'true' && steps.existing-pr.outputs.exists == 'false'
@@ -79,7 +79,7 @@ jobs:
           NEW_METHOD_COUNT=$(jq -r '.methodCount' src/generated/_metadata.json)
           echo "new_method_count=$NEW_METHOD_COUNT" >> $GITHUB_OUTPUT
 
-          OLD_COUNT=${{ steps.check.outputs.current_method_count }}
+          OLD_COUNT="${{ steps.check.outputs.current_method_count }:-0}"
           DIFF=$((NEW_METHOD_COUNT - OLD_COUNT))
 
           if [ $DIFF -gt 0 ]; then
