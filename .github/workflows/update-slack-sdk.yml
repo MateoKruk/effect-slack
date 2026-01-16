@@ -31,6 +31,12 @@ jobs:
           CURRENT_METHOD_COUNT=$(jq -r '.methodCount' src/generated/_metadata.json)
           LATEST_VERSION=$(npm view @slack/web-api version)
 
+          # Validate version matches semver pattern
+          if ! [[ "$LATEST_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
+            echo "Error: Invalid version format from npm: $LATEST_VERSION"
+            exit 1
+          fi
+
           echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
           echo "current_method_count=$CURRENT_METHOD_COUNT" >> $GITHUB_OUTPUT
@@ -96,13 +102,13 @@ jobs:
         if: steps.check.outputs.needs_update == 'true' && steps.existing-pr.outputs.exists == 'false'
         run: |
           CHANGESET_ID=$(echo "${{ steps.check.outputs.latest_version }}" | tr '.' '-')
-          cat > ".changeset/update-slack-sdk-${CHANGESET_ID}.md" << EOF
-          ---
-          "effect-slack": minor
-          ---
-
-          Update @slack/web-api from ${{ steps.check.outputs.current_version }} to ${{ steps.check.outputs.latest_version }}
-          EOF
+          {
+            echo '---'
+            echo '"effect-slack": minor'
+            echo '---'
+            echo ''
+            echo 'Update @slack/web-api from ${{ steps.check.outputs.current_version }} to ${{ steps.check.outputs.latest_version }}'
+          } > ".changeset/update-slack-sdk-${CHANGESET_ID}.md"
 
       - name: Create Pull Request
         if: steps.check.outputs.needs_update == 'true' && steps.existing-pr.outputs.exists == 'false'
@@ -133,7 +139,7 @@ jobs:
           Automated update of \`@slack/web-api\` dependency.
 
           - **Version**: ${{ steps.check.outputs.current_version }} → ${{ steps.check.outputs.latest_version }}
-          - **$METHOD_INFO**
+          - $METHOD_INFO
 
           ## Changes
 
