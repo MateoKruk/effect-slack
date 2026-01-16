@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@effect/platform": "^0.94.1",
-    "@effect/platform-bun": "^0.56.0",
+    "@effect/platform-bun": "^0.87.0",
     "effect": "^3.19.14",
     "effect-slack": "^0.1.0"
   },
