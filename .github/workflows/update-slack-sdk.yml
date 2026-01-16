@@ -6,6 +6,10 @@ on:
     - cron: "0 9 * * *"
   workflow_dispatch: # Allow manual triggering
 
+concurrency:
+  group: update-slack-sdk
+  cancel-in-progress: false
+
 jobs:
   check-and-update:
     name: Check for Slack SDK Updates
@@ -127,13 +131,19 @@ jobs:
           fi
 
           CHANGESET_ID=$(echo "$LATEST_VERSION" | tr '.' '-')
-          {
-            echo '---'
-            echo "\"effect-slack\": $BUMP_TYPE"
-            echo '---'
-            echo ''
-            echo "Update @slack/web-api from $CURRENT_VERSION to $LATEST_VERSION"
-          } > ".changeset/update-slack-sdk-${CHANGESET_ID}.md"
+          CHANGESET_FILE=".changeset/update-slack-sdk-${CHANGESET_ID}.md"
+
+          if [ -f "$CHANGESET_FILE" ]; then
+            echo "Changeset file '$CHANGESET_FILE' already exists, skipping creation."
+          else
+            {
+              echo '---'
+              echo "\"effect-slack\": $BUMP_TYPE"
+              echo '---'
+              echo ''
+              echo "Update @slack/web-api from $CURRENT_VERSION to $LATEST_VERSION"
+            } > "$CHANGESET_FILE"
+          fi
 
       - name: Create Pull Request
         if: steps.check.outputs.needs_update == 'true' && steps.existing-pr.outputs.exists == 'false'
@@ -146,7 +156,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           git checkout -b "$BRANCH_NAME"
-          git add .
+          git add package.json bun.lock src/generated .changeset
           git commit -m "chore: update @slack/web-api to ${{ steps.check.outputs.latest_version }}"
           git push -u origin "$BRANCH_NAME"
 

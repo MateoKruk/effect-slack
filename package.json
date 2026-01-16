@@ -74,8 +74,11 @@
     "effect": "^3.0.0"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,md,yml,yaml}": [
+    "*.{js,jsx,ts,tsx}": [
       "oxlint",
+      "oxfmt --write"
+    ],
+    "*.{md,yml,yaml}": [
       "oxfmt --write"
     ]
   },
