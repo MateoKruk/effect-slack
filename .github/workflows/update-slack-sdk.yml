@@ -78,7 +78,11 @@ jobs:
           NEW_METHOD_COUNT=$(jq -r '.methodCount' src/generated/_metadata.json)
           echo "new_method_count=$NEW_METHOD_COUNT" >> $GITHUB_OUTPUT
 
-          OLD_COUNT="${{ steps.check.outputs.current_method_count }:-0}"
+          OLD_COUNT="${{ steps.check.outputs.current_method_count }}"
+          if [ -z "$OLD_COUNT" ]; then
+            echo "Error: current_method_count is not set" >&2
+            exit 1
+          fi
           DIFF=$((NEW_METHOD_COUNT - OLD_COUNT))
 
           if [ $DIFF -gt 0 ]; then
@@ -101,13 +105,34 @@ jobs:
       - name: Create changeset
         if: steps.check.outputs.needs_update == 'true' && steps.existing-pr.outputs.exists == 'false'
         run: |
-          CHANGESET_ID=$(echo "${{ steps.check.outputs.latest_version }}" | tr '.' '-')
+          CURRENT_VERSION="${{ steps.check.outputs.current_version }}"
+          LATEST_VERSION="${{ steps.check.outputs.latest_version }}"
+
+          # Parse semver components
+          CURRENT_MAJOR="${CURRENT_VERSION%%.*}"
+          CURRENT_REST="${CURRENT_VERSION#*.}"
+          CURRENT_MINOR="${CURRENT_REST%%.*}"
+
+          LATEST_MAJOR="${LATEST_VERSION%%.*}"
+          LATEST_REST="${LATEST_VERSION#*.}"
+          LATEST_MINOR="${LATEST_REST%%.*}"
+
+          # Determine bump type based on semver diff
+          if [ "$LATEST_MAJOR" -gt "$CURRENT_MAJOR" ]; then
+            BUMP_TYPE="major"
+          elif [ "$LATEST_MINOR" -gt "$CURRENT_MINOR" ]; then
+            BUMP_TYPE="minor"
+          else
+            BUMP_TYPE="patch"
+          fi
+
+          CHANGESET_ID=$(echo "$LATEST_VERSION" | tr '.' '-')
           {
             echo '---'
-            echo '"effect-slack": minor'
+            echo "\"effect-slack\": $BUMP_TYPE"
             echo '---'
             echo ''
-            echo 'Update @slack/web-api from ${{ steps.check.outputs.current_version }} to ${{ steps.check.outputs.latest_version }}'
+            echo "Update @slack/web-api from $CURRENT_VERSION to $LATEST_VERSION"
           } > ".changeset/update-slack-sdk-${CHANGESET_ID}.md"
 
       - name: Create Pull Request
@@ -156,6 +181,8 @@ jobs:
             echo '- [x] Build'
             echo ''
             echo 'See [Slack Web API releases](https://github.com/slackapi/node-slack-sdk/releases) for changelog.'
+            echo ''
+            echo 'Release notes: https://github.com/slackapi/node-slack-sdk/releases/tag/@slack/web-api@${{ steps.check.outputs.latest_version }}'
             echo ''
             echo '---'
             echo '*Automated by Update Slack SDK workflow*'
