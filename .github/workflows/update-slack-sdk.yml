@@ -1,0 +1,156 @@
+name: Update Slack SDK
+
+on:
+  schedule:
+    # Run daily at 9:00 AM UTC
+    - cron: '0 9 * * *'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  check-and-update:
+    name: Check for Slack SDK Updates
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check for updates
+        id: check
+        run: |
+          CURRENT_VERSION=$(jq -r '.slackWebApiVersion' src/generated/_metadata.json)
+          CURRENT_METHOD_COUNT=$(jq -r '.methodCount' src/generated/_metadata.json)
+          LATEST_VERSION=$(npm view @slack/web-api version)
+
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+          echo "current_method_count=$CURRENT_METHOD_COUNT" >> $GITHUB_OUTPUT
+
+          if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
+            echo "needs_update=false" >> $GITHUB_OUTPUT
+            echo "✓ Already up to date: $CURRENT_VERSION"
+          else
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "⬆ Update available: $CURRENT_VERSION → $LATEST_VERSION"
+          fi
+
+      - name: Check for existing PR
+        if: steps.check.outputs.needs_update == 'true'
+        id: existing-pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME="chore/update-slack-web-api-${{ steps.check.outputs.latest_version }}"
+          EXISTING_PR=$(gh pr list --head "$BRANCH_NAME" --state open --json number --jq '.[0].number // empty')
+
+          if [ -n "$EXISTING_PR" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "PR #$EXISTING_PR already exists for this update"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update dependency
+        if: steps.check.outputs.needs_update == 'true' && steps.existing-pr.outputs.exists == 'false'
+        run: bun add @slack/web-api@${{ steps.check.outputs.latest_version }}
+
+      - name: Regenerate services
+        if: steps.check.outputs.needs_update == 'true' && steps.existing-pr.outputs.exists == 'false'
+        id: generate
+        run: |
+          bun run generate
+
+          NEW_METHOD_COUNT=$(jq -r '.methodCount' src/generated/_metadata.json)
+          echo "new_method_count=$NEW_METHOD_COUNT" >> $GITHUB_OUTPUT
+
+          OLD_COUNT=${{ steps.check.outputs.current_method_count }}
+          DIFF=$((NEW_METHOD_COUNT - OLD_COUNT))
+
+          if [ $DIFF -gt 0 ]; then
+            echo "method_diff=+$DIFF" >> $GITHUB_OUTPUT
+          elif [ $DIFF -lt 0 ]; then
+            echo "method_diff=$DIFF" >> $GITHUB_OUTPUT
+          else
+            echo "method_diff=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run CI checks
+        if: steps.check.outputs.needs_update == 'true' && steps.existing-pr.outputs.exists == 'false'
+        run: |
+          bun run lint
+          bun run format:check
+          bun run typecheck
+          bun run test
+          bun run build
+
+      - name: Create changeset
+        if: steps.check.outputs.needs_update == 'true' && steps.existing-pr.outputs.exists == 'false'
+        run: |
+          CHANGESET_ID=$(echo "${{ steps.check.outputs.latest_version }}" | tr '.' '-')
+          cat > ".changeset/update-slack-sdk-${CHANGESET_ID}.md" << EOF
+          ---
+          "effect-slack": minor
+          ---
+
+          Update @slack/web-api from ${{ steps.check.outputs.current_version }} to ${{ steps.check.outputs.latest_version }}
+          EOF
+
+      - name: Create Pull Request
+        if: steps.check.outputs.needs_update == 'true' && steps.existing-pr.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME="chore/update-slack-web-api-${{ steps.check.outputs.latest_version }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git checkout -b "$BRANCH_NAME"
+          git add .
+          git commit -m "chore: update @slack/web-api to ${{ steps.check.outputs.latest_version }}"
+          git push -u origin "$BRANCH_NAME"
+
+          METHOD_DIFF="${{ steps.generate.outputs.method_diff }}"
+          if [ "$METHOD_DIFF" = "0" ]; then
+            METHOD_INFO="Method count unchanged (${{ steps.generate.outputs.new_method_count }} methods)"
+          else
+            METHOD_INFO="Method count: ${{ steps.check.outputs.current_method_count }} → ${{ steps.generate.outputs.new_method_count }} ($METHOD_DIFF)"
+          fi
+
+          gh pr create \
+            --title "chore: update @slack/web-api to ${{ steps.check.outputs.latest_version }}" \
+            --body "## Summary
+
+          Automated update of \`@slack/web-api\` dependency.
+
+          - **Version**: ${{ steps.check.outputs.current_version }} → ${{ steps.check.outputs.latest_version }}
+          - **$METHOD_INFO**
+
+          ## Changes
+
+          - Updated \`@slack/web-api\` dependency
+          - Regenerated Effect service wrappers
+          - Created changeset for versioning
+
+          ## Verification
+
+          All CI checks passed:
+          - [x] Lint
+          - [x] Format
+          - [x] Typecheck
+          - [x] Tests
+          - [x] Build
+
+          See [Slack Web API releases](https://github.com/slackapi/node-slack-sdk/releases) for changelog.
+
+          ---
+          *Automated by Update Slack SDK workflow*"

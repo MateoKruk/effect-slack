@@ -5,6 +5,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "@slack/web-api" # Handled by update-slack-sdk.yml
     groups:
       effect:
         patterns:
