@@ -1,7 +1,7 @@
 version: 2
 updates:
   # Main package dependencies
-  - package-ecosystem: "npm"
+  - package-ecosystem: "bun"
     directory: "/"
     schedule:
       interval: "weekly"
@@ -21,7 +21,7 @@ updates:
           - "@effect/*"
 
   # Example: Effect Platform
-  - package-ecosystem: "npm"
+  - package-ecosystem: "bun"
     directory: "/examples/with-effect-platform"
     schedule:
       interval: "weekly"
@@ -32,7 +32,7 @@ updates:
           - "@effect/*"
 
   # Example: Express
-  - package-ecosystem: "npm"
+  - package-ecosystem: "bun"
     directory: "/examples/with-express"
     schedule:
       interval: "weekly"
