@@ -7,40 +7,18 @@ updates:
       interval: "weekly"
     ignore:
       - dependency-name: "@slack/web-api" # Handled by update-slack-sdk.yml
-    groups:
-      effect:
-        patterns:
-          - "effect"
-          - "@effect/*"
-      development:
-        patterns:
-          - "*"
-        dependency-type: "development"
-        exclude-patterns:
-          - "effect"
-          - "@effect/*"
 
   # Example: Effect Platform
   - package-ecosystem: "bun"
     directory: "/examples/with-effect-platform"
     schedule:
       interval: "weekly"
-    groups:
-      effect:
-        patterns:
-          - "effect"
-          - "@effect/*"
 
   # Example: Express
   - package-ecosystem: "bun"
     directory: "/examples/with-express"
     schedule:
       interval: "weekly"
-    groups:
-      effect:
-        patterns:
-          - "effect"
-          - "@effect/*"
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
