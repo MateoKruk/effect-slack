@@ -1,10 +1,11 @@
+import { Either } from "effect"
 /**
  * Pure TypeScript AST parsing for the code generator
  */
 import * as ts from "typescript"
-import { Either } from "effect"
-import type { MethodInfo, NamespaceInfo, JsDocInfo } from "./types.js"
+
 import { MethodsClassNotFoundError } from "./errors.js"
+import type { MethodInfo, NamespaceInfo, JsDocInfo } from "./types.js"
 
 /**
  * Extract JSDoc information from a TypeScript node's full text

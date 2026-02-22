@@ -1,5 +1,5 @@
-import { Context, Effect, Layer, Config, Redacted, type ConfigError } from "effect"
 import type { WebClientOptions } from "@slack/web-api"
+import { Context, Effect, Layer, Config, Redacted, type ConfigError } from "effect"
 
 /**
  * Slack configuration interface

@@ -1,9 +1,11 @@
-import { describe, it, expect } from "vitest"
 import * as fs from "node:fs"
 import * as path from "node:path"
+
 import { Either } from "effect"
-import { parseMethodsSource } from "../../scripts/lib/parser.js"
+import { describe, it, expect } from "vitest"
+
 import { generateServiceFile, generateIndexFile } from "../../scripts/lib/codegen.js"
+import { parseMethodsSource } from "../../scripts/lib/parser.js"
 
 const GENERATED_DIR = path.join(process.cwd(), "src/generated")
 const METHODS_PATH = path.join(process.cwd(), "node_modules/@slack/web-api/dist/methods.d.ts")

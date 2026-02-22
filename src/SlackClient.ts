@@ -1,5 +1,6 @@
-import { Context, Effect, Layer, Redacted } from "effect"
 import { WebClient } from "@slack/web-api"
+import { Context, Effect, Layer, Redacted } from "effect"
+
 import { SlackConfig } from "./SlackConfig.js"
 
 /**

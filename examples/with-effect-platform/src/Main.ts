@@ -2,11 +2,12 @@ import { HttpApiBuilder, HttpApiSwagger, HttpMiddleware, HttpServer } from "@eff
 import { BunHttpServer, BunRuntime } from "@effect/platform-bun"
 import { Effect, Layer } from "effect"
 import { SlackConfig } from "effect-slack"
+
 import { SlackBotApi } from "./Api.js"
 import { AppConfig } from "./Config.js"
+import { HealthResponse } from "./Schemas.js"
 import { EventsLive } from "./SlackEvents.js"
 import { CommandsLive } from "./SlashCommands.js"
-import { HealthResponse } from "./Schemas.js"
 
 // =============================================================================
 // Health Group Implementation

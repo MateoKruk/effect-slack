@@ -1,6 +1,7 @@
 import { HttpApiBuilder } from "@effect/platform"
 import { Effect, Layer } from "effect"
 import { SlackService } from "effect-slack"
+
 import { SlackBotApi } from "./Api.js"
 import { SlashCommandResponse, SlackApiError } from "./Schemas.js"
 

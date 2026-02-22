@@ -1,6 +1,7 @@
-import { Effect } from "effect"
 import { describe, it } from "@effect/vitest"
+import { Effect } from "effect"
 import { assert } from "vitest"
+
 import {
   SlackRequestError,
   SlackHttpError,

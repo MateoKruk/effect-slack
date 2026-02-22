@@ -1,6 +1,7 @@
-import { Router, type Request, type Response } from "express"
 import { Effect, Exit } from "effect"
 import { SlackService } from "effect-slack"
+import { Router, type Request, type Response } from "express"
+
 import { runSlackEffectExit } from "../slack.js"
 
 const router = Router()

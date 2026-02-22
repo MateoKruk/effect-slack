@@ -1,4 +1,3 @@
-import { Effect, Layer, type ConfigError } from "effect"
 import {
   type ChatPostMessageArguments,
   type ChatUpdateArguments,
@@ -22,9 +21,11 @@ import {
   type FilesUploadResponse,
   type WebAPICallResult
 } from "@slack/web-api"
+import { Effect, Layer, type ConfigError } from "effect"
+
+import { mapSlackError, annotateSpanWithError, type SlackError } from "./internal/errors.js"
 import { SlackClient } from "./SlackClient.js"
 import { SlackConfig } from "./SlackConfig.js"
-import { mapSlackError, annotateSpanWithError, type SlackError } from "./internal/errors.js"
 
 /**
  * SlackService - Effect-native Slack Web API client

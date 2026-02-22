@@ -1,7 +1,8 @@
 import express from "express"
-import healthRouter from "./handlers/health.js"
-import eventsRouter from "./handlers/events.js"
+
 import commandsRouter from "./handlers/commands.js"
+import eventsRouter from "./handlers/events.js"
+import healthRouter from "./handlers/health.js"
 
 const app = express()
 

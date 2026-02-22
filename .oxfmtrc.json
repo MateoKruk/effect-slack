@@ -4,5 +4,16 @@
   "semi": false,
   "singleQuote": false,
   "trailingComma": "none",
-  "ignorePatterns": ["dist", "src/generated", "CHANGELOG.md"]
+  "ignorePatterns": ["dist", "src/generated", "CHANGELOG.md"],
+  "experimentalSortImports": {
+    "groups": ["builtin", "external", ["parent", "sibling", "index"], "unknown"],
+    "customGroups": [],
+    "internalPattern": [],
+    "newlinesBetween": true,
+    "order": "asc",
+    "ignoreCase": true,
+    "partitionByComment": false,
+    "partitionByNewline": false,
+    "sortSideEffects": false
+  }
 }

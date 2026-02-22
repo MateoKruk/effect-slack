@@ -1,7 +1,8 @@
-import { Effect, Layer } from "effect"
 import { describe, it } from "@effect/vitest"
-import { assert } from "vitest"
 import type { WebClient } from "@slack/web-api"
+import { Effect, Layer } from "effect"
+import { assert } from "vitest"
+
 import { SlackService } from "../src/index.js"
 
 // Mock WebClient for testing

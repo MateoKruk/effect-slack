@@ -1,8 +1,8 @@
+import { toPascalCase, safeMethodName, uniqueMethodVarName } from "./helpers.js"
 /**
  * Pure code generation functions for the code generator
  */
 import type { MethodInfo, NamespaceInfo, GeneratedMethod, GeneratedFile } from "./types.js"
-import { toPascalCase, safeMethodName, uniqueMethodVarName } from "./helpers.js"
 
 /**
  * Generate code for a single method implementation

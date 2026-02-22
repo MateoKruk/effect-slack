@@ -7,8 +7,10 @@
  *   bun scripts/generate-services.ts --check  # Check if generated code is up-to-date
  */
 import * as path from "node:path"
-import { Effect } from "effect"
+
 import { NodeFileSystem, NodeRuntime } from "@effect/platform-node"
+import { Effect } from "effect"
+
 import { generate, check, createConfig } from "./lib/index.js"
 
 const ROOT_DIR = path.resolve(import.meta.dir, "..")

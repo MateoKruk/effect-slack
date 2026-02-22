@@ -2,9 +2,11 @@
  * Effect-based orchestration for the code generator
  */
 import * as path from "node:path"
-import { Effect, Console, Either } from "effect"
+
 import { FileSystem } from "@effect/platform"
-import type { GeneratorConfig, Metadata } from "./types.js"
+import { Effect, Console, Either } from "effect"
+
+import { generateAllFiles } from "./codegen.js"
 import {
   MethodsFileNotFoundError,
   GeneratedCodeOutOfDateError,
@@ -12,9 +14,9 @@ import {
   WriteFileError,
   PackageJsonNotFoundError
 } from "./errors.js"
-import { parseMethodsSource } from "./parser.js"
-import { generateAllFiles } from "./codegen.js"
 import { countMethods, computeHash } from "./helpers.js"
+import { parseMethodsSource } from "./parser.js"
+import type { GeneratorConfig, Metadata } from "./types.js"
 
 /**
  * Read a file's contents using FileSystem service

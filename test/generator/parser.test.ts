@@ -1,6 +1,7 @@
 import { describe, it } from "@effect/vitest"
-import { assert } from "vitest"
 import { Either } from "effect"
+import { assert } from "vitest"
+
 import { parseMethodsSource, getJsDocInfo } from "../../scripts/lib/parser.js"
 
 describe("Parser", () => {

@@ -1,5 +1,6 @@
 import { describe, it } from "@effect/vitest"
 import { assert } from "vitest"
+
 import {
   generateMethodCode,
   generateNamespaceMethods,

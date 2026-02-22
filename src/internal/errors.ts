@@ -1,5 +1,6 @@
-import { Effect } from "effect"
 import { ErrorCode } from "@slack/web-api"
+import { Effect } from "effect"
+
 import {
   SlackRequestError,
   SlackHttpError,

@@ -1,5 +1,5 @@
-import { Schema } from "effect"
 import { ErrorCode } from "@slack/web-api"
+import { Schema } from "effect"
 
 /**
  * Re-export ErrorCode for consumers to use in type guards

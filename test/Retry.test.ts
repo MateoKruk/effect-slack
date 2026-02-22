@@ -1,6 +1,7 @@
-import { Effect, Schedule } from "effect"
 import { describe, it } from "@effect/vitest"
+import { Effect, Schedule } from "effect"
 import { assert } from "vitest"
+
 import {
   SlackRequestError,
   SlackHttpError,

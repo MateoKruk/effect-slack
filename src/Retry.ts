@@ -1,4 +1,5 @@
 import { Duration, Effect, pipe, Schedule } from "effect"
+
 import type { SlackError } from "./Errors.js"
 
 /**
