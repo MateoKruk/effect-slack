@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GH_PAT }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -69,7 +71,7 @@ jobs:
         if: steps.check.outputs.needs_update == 'true'
         id: existing-pr
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           BRANCH_NAME="chore/update-slack-web-api-${{ steps.check.outputs.latest_version }}"
           EXISTING_PR=$(gh pr list --head "$BRANCH_NAME" --state open --json number --jq '.[0].number // empty')
@@ -168,10 +170,27 @@ jobs:
             } > "$CHANGESET_FILE"
           fi
 
+      - name: Close superseded PRs
+        if: steps.check.outputs.needs_update == 'true' && steps.existing-pr.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          # Find all open PRs from this automation
+          gh pr list \
+            --author "github-actions[bot]" \
+            --search "chore: update @slack/web-api to" \
+            --state open \
+            --json number,headRefName \
+            --jq '.[] | "\(.number) \(.headRefName)"' | \
+          while read -r pr_number branch; do
+            echo "Closing superseded PR #$pr_number ($branch)"
+            gh pr close "$pr_number" --comment "Superseded by update to ${{ steps.check.outputs.latest_version }}" --delete-branch
+          done
+
       - name: Create Pull Request
         if: steps.check.outputs.needs_update == 'true' && steps.existing-pr.outputs.exists == 'false'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           BRANCH_NAME="chore/update-slack-web-api-${{ steps.check.outputs.latest_version }}"
 
