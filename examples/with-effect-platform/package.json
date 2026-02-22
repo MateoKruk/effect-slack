@@ -11,7 +11,7 @@
   "dependencies": {
     "@effect/platform": "^0.94.4",
     "@effect/platform-bun": "^0.87.0",
-    "effect": "^3.19.16",
+    "effect": "^3.19.19",
     "effect-slack": "^0.1.0"
   },
   "devDependencies": {
