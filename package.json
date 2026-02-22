@@ -74,13 +74,8 @@
     "effect": "^3.0.0"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "oxlint",
-      "oxfmt --write"
-    ],
-    "*.{md,yml,yaml}": [
-      "oxfmt --write"
-    ]
+    "*.{js,jsx,ts,tsx}": "oxlint",
+    "*": "oxfmt --write --no-error-on-unmatched-pattern"
   },
   "engines": {
     "node": ">=18"
