@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "effect": "^3.19.19",
-    "effect-slack": "^0.1.0",
+    "effect-slack": "^0.2.0",
     "express": "^5.1.0"
   },
   "devDependencies": {
