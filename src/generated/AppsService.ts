@@ -20,7 +20,9 @@ import type {
   AppsManifestValidateArguments,
   AppsManifestValidateResponse,
   AppsUninstallArguments,
-  AppsUninstallResponse
+  AppsUninstallResponse,
+  AppsUserConnectionUpdateArguments,
+  AppsUserConnectionUpdateResponse
 } from "@slack/web-api"
 import { SlackClient } from "../SlackClient.js"
 import { mapSlackError, annotateSpanWithError, type SlackError } from "../internal/errors.js"
@@ -157,6 +159,22 @@ export class AppsService extends Effect.Service<AppsService>()("effect-slack/App
         })
       )
 
+    /**
+     * Updates the connection status between a user and an app.
+     */
+    const UserConnectionUpdate = (
+      args: AppsUserConnectionUpdateArguments
+    ): Effect.Effect<AppsUserConnectionUpdateResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.apps.user.connection.update(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AppsService.user.connection.update", {
+          attributes: { "slack.method": "apps.user.connection.update" }
+        })
+      )
+
     return {
       uninstall,
       connections: {
@@ -173,6 +191,11 @@ export class AppsService extends Effect.Service<AppsService>()("effect-slack/App
         export_: ManifestExport_,
         update: ManifestUpdate,
         validate: ManifestValidate
+      },
+      user: {
+        connection: {
+          update: UserConnectionUpdate
+        }
       }
     } as const
   }),
