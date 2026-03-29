@@ -10,12 +10,12 @@
   },
   "dependencies": {
     "@effect/platform": "^0.94.5",
-    "@effect/platform-bun": "^0.87.0",
+    "@effect/platform-bun": "^0.89.0",
     "effect": "^3.19.19",
     "effect-slack": "^0.3.0"
   },
   "devDependencies": {
-    "@types/bun": "^1.3.10",
+    "@types/bun": "^1.3.11",
     "typescript": "^5.9.3"
   }
 }
