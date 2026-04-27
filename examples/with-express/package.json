@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "effect": "^3.21.0",
+    "effect": "^3.21.2",
     "effect-slack": "^0.3.0",
     "express": "^5.1.0"
   },
