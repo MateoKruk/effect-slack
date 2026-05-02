@@ -1,5 +1,11 @@
 # effect-slack
 
+## 0.3.1
+
+### Patch Changes
+
+- [#88](https://github.com/MateoKruk/effect-slack/pull/88) [`67e19ae`](https://github.com/MateoKruk/effect-slack/commit/67e19ae1741c1d21f44ced307c31d6deb5228e22) Thanks [@MateoKruk](https://github.com/MateoKruk)! - Update @slack/web-api from 7.15.0 to 7.15.1
+
 ## 0.3.0
 
 ### Minor Changes
