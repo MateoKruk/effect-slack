@@ -1,6 +1,6 @@
 {
   "name": "effect-slack",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "An Effect-native Slack SDK",
   "keywords": [
     "api",
