@@ -6,9 +6,7 @@
 import { Effect } from "effect"
 import type {
   RTMConnectArguments,
-  RTMStartArguments,
-  RtmConnectResponse,
-  RtmStartResponse
+  RtmConnectResponse
 } from "@slack/web-api"
 import { SlackClient } from "../SlackClient.js"
 import { mapSlackError, annotateSpanWithError, type SlackError } from "../internal/errors.js"
@@ -33,26 +31,8 @@ export class RtmService extends Effect.Service<RtmService>()("effect-slack/RtmSe
         })
       )
 
-    /**
-     * Starts a Real Time Messaging session.
-     * @deprecated
-     */
-    const start = (
-      args?: RTMStartArguments
-    ): Effect.Effect<RtmStartResponse, SlackError> =>
-      Effect.tryPromise({
-        try: () => client.rtm.start(args),
-        catch: mapSlackError
-      }).pipe(
-        Effect.tapError(annotateSpanWithError),
-        Effect.withSpan("RtmService.start", {
-          attributes: { "slack.method": "rtm.start" }
-        })
-      )
-
     return {
-      connect,
-      start
+      connect
     } as const
   }),
   dependencies: [SlackClient.Default]
