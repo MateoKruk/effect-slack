@@ -7,7 +7,7 @@
       "dependencies": {
         "@effect/platform": "^0.96.1",
         "@effect/platform-bun": "^0.89.0",
-        "effect": "^3.21.2",
+        "effect": "^3.21.4",
         "effect-slack": "^0.3.1",
       },
       "devDependencies": {
@@ -105,7 +105,7 @@
 
     "dunder-proto": ["dunder-proto@1.0.1", "", { "dependencies": { "call-bind-apply-helpers": "^1.0.1", "es-errors": "^1.3.0", "gopd": "^1.2.0" } }, "sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A=="],
 
-    "effect": ["effect@3.21.2", "", { "dependencies": { "@standard-schema/spec": "^1.0.0", "fast-check": "^3.23.1" } }, "sha512-rXd2FGDM8KdjSIrc+mqEELo7ScW7xTVxEf1iInmPSpIde9/nyGuFM710cjTo7/EreGXiUX2MOonPpprbz2XHCg=="],
+    "effect": ["effect@3.21.4", "", { "dependencies": { "@standard-schema/spec": "^1.0.0", "fast-check": "^3.23.1" } }, "sha512-B89v/xSgPbl1J2Ai2u18jxq3odpFauU1rC6/eSs4FeNHi72kwKdJp12VGigvRV2lK+kRnx+OOz41XV8guZd4gQ=="],
 
     "effect-slack": ["effect-slack@0.3.1", "", { "dependencies": { "@slack/web-api": "7.15.1" }, "peerDependencies": { "effect": "^3.0.0" } }, "sha512-e3yPTs/NB/c6jt1r0qRZf1v3+mouxaQMzLWlwXLGVyEuCqkdHyJJfQZhnCtFRhxjURWmLc3bLB9669kP6FVhTA=="],
 
