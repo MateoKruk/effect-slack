@@ -155,6 +155,8 @@ import type {
   AdminUsergroupsRemoveChannelsResponse,
   AdminUsersAssignArguments,
   AdminUsersAssignResponse,
+  AdminUsersGetExpirationArguments,
+  AdminUsersGetExpirationResponse,
   AdminUsersInviteArguments,
   AdminUsersInviteResponse,
   AdminUsersListArguments,
@@ -1404,6 +1406,22 @@ export class AdminService extends Effect.Service<AdminService>()("effect-slack/A
       )
 
     /**
+     * Fetches the expiration timestamp for a guest.
+     */
+    const UsersGetExpiration = (
+      args: AdminUsersGetExpirationArguments
+    ): Effect.Effect<AdminUsersGetExpirationResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.admin.users.getExpiration(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AdminService.users.getExpiration", {
+          attributes: { "slack.method": "admin.users.getExpiration" }
+        })
+      )
+
+    /**
      * Invite a user to a workspace.
      */
     const UsersInvite = (
@@ -1850,6 +1868,7 @@ export class AdminService extends Effect.Service<AdminService>()("effect-slack/A
       },
       users: {
         assign: UsersAssign,
+        getExpiration: UsersGetExpiration,
         invite: UsersInvite,
         list: UsersList,
         remove: UsersRemove,

@@ -4,11 +4,13 @@
  */
 
 export { AdminService } from "./AdminService.js"
+export { AgentsService } from "./AgentsService.js"
 export { ApiService } from "./ApiService.js"
 export { AssistantService } from "./AssistantService.js"
 export { AppsService } from "./AppsService.js"
 export { AuthService } from "./AuthService.js"
 export { BookmarksService } from "./BookmarksService.js"
+export { BlocksService } from "./BlocksService.js"
 export { BotsService } from "./BotsService.js"
 export { CallsService } from "./CallsService.js"
 export { CanvasesService } from "./CanvasesService.js"
