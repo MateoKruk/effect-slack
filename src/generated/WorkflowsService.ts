@@ -5,18 +5,14 @@
 
 import { Effect } from "effect"
 import type {
-  WebAPICallResult,
   WorkflowsFeaturedAddArguments,
+  WorkflowsFeaturedAddResponse,
   WorkflowsFeaturedListArguments,
   WorkflowsFeaturedListResponse,
   WorkflowsFeaturedRemoveArguments,
+  WorkflowsFeaturedRemoveResponse,
   WorkflowsFeaturedSetArguments,
-  WorkflowsStepCompletedArguments,
-  WorkflowsStepCompletedResponse,
-  WorkflowsStepFailedArguments,
-  WorkflowsStepFailedResponse,
-  WorkflowsUpdateStepArguments,
-  WorkflowsUpdateStepResponse
+  WorkflowsFeaturedSetResponse
 } from "@slack/web-api"
 import { SlackClient } from "../SlackClient.js"
 import { mapSlackError, annotateSpanWithError, type SlackError } from "../internal/errors.js"
@@ -26,62 +22,11 @@ export class WorkflowsService extends Effect.Service<WorkflowsService>()("effect
     const client = yield* SlackClient
 
     /**
-     * Indicate that an app's step in a workflow completed execution.
-     * @deprecated
-     */
-    const stepCompleted = (
-      args: WorkflowsStepCompletedArguments
-    ): Effect.Effect<WorkflowsStepCompletedResponse, SlackError> =>
-      Effect.tryPromise({
-        try: () => client.workflows.stepCompleted(args),
-        catch: mapSlackError
-      }).pipe(
-        Effect.tapError(annotateSpanWithError),
-        Effect.withSpan("WorkflowsService.stepCompleted", {
-          attributes: { "slack.method": "workflows.stepCompleted" }
-        })
-      )
-
-    /**
-     * Indicate that an app's step in a workflow failed to execute.
-     * @deprecated
-     */
-    const stepFailed = (
-      args: WorkflowsStepFailedArguments
-    ): Effect.Effect<WorkflowsStepFailedResponse, SlackError> =>
-      Effect.tryPromise({
-        try: () => client.workflows.stepFailed(args),
-        catch: mapSlackError
-      }).pipe(
-        Effect.tapError(annotateSpanWithError),
-        Effect.withSpan("WorkflowsService.stepFailed", {
-          attributes: { "slack.method": "workflows.stepFailed" }
-        })
-      )
-
-    /**
-     * Update the configuration for a workflow step.
-     * @deprecated
-     */
-    const updateStep = (
-      args: WorkflowsUpdateStepArguments
-    ): Effect.Effect<WorkflowsUpdateStepResponse, SlackError> =>
-      Effect.tryPromise({
-        try: () => client.workflows.updateStep(args),
-        catch: mapSlackError
-      }).pipe(
-        Effect.tapError(annotateSpanWithError),
-        Effect.withSpan("WorkflowsService.updateStep", {
-          attributes: { "slack.method": "workflows.updateStep" }
-        })
-      )
-
-    /**
      * Add featured workflows to a channel.
      */
     const FeaturedAdd = (
       args: WorkflowsFeaturedAddArguments
-    ): Effect.Effect<WebAPICallResult, SlackError> =>
+    ): Effect.Effect<WorkflowsFeaturedAddResponse, SlackError> =>
       Effect.tryPromise({
         try: () => client.workflows.featured.add(args),
         catch: mapSlackError
@@ -113,7 +58,7 @@ export class WorkflowsService extends Effect.Service<WorkflowsService>()("effect
      */
     const FeaturedRemove = (
       args: WorkflowsFeaturedRemoveArguments
-    ): Effect.Effect<WebAPICallResult, SlackError> =>
+    ): Effect.Effect<WorkflowsFeaturedRemoveResponse, SlackError> =>
       Effect.tryPromise({
         try: () => client.workflows.featured.remove(args),
         catch: mapSlackError
@@ -129,7 +74,7 @@ export class WorkflowsService extends Effect.Service<WorkflowsService>()("effect
      */
     const FeaturedSet = (
       args: WorkflowsFeaturedSetArguments
-    ): Effect.Effect<WebAPICallResult, SlackError> =>
+    ): Effect.Effect<WorkflowsFeaturedSetResponse, SlackError> =>
       Effect.tryPromise({
         try: () => client.workflows.featured.set(args),
         catch: mapSlackError
@@ -141,9 +86,6 @@ export class WorkflowsService extends Effect.Service<WorkflowsService>()("effect
       )
 
     return {
-      stepCompleted,
-      stepFailed,
-      updateStep,
       featured: {
         add: FeaturedAdd,
         list: FeaturedList,
