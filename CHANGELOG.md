@@ -1,5 +1,17 @@
 # effect-slack
 
+## 1.0.0
+
+### Major Changes
+
+- [#135](https://github.com/MateoKruk/effect-slack/pull/135) [`e2f10b6`](https://github.com/MateoKruk/effect-slack/commit/e2f10b6dbed252c4f057cba2afc116092e1b70fe) Thanks [@MateoKruk](https://github.com/MateoKruk)! - Update @slack/web-api from 7.18.0 to 8.1.1
+
+  Breaking changes from regenerating the service wrappers:
+
+  - Removed `RtmService.start`, `FilesService.upload` and `WorkflowsService.stepCompleted` / `stepFailed` / `updateStep` (deprecated upstream)
+  - Added `AgentsService`, `BlocksService` and `AdminService.usersGetExpiration`
+  - Minimum supported Node version is now 20, matching `@slack/web-api` 8
+
 ## 0.4.0
 
 ### Minor Changes
