@@ -33,8 +33,6 @@ import type {
   FilesRevokePublicURLResponse,
   FilesSharedPublicURLArguments,
   FilesSharedPublicURLResponse,
-  FilesUploadArguments,
-  FilesUploadResponse,
   FilesUploadV2Arguments,
   WebAPICallResult
 } from "@slack/web-api"
@@ -154,23 +152,6 @@ export class FilesService extends Effect.Service<FilesService>()("effect-slack/F
         Effect.tapError(annotateSpanWithError),
         Effect.withSpan("FilesService.sharedPublicURL", {
           attributes: { "slack.method": "files.sharedPublicURL" }
-        })
-      )
-
-    /**
-     * Uploads or creates a file.
-     * @deprecated
-     */
-    const upload = (
-      args: FilesUploadArguments
-    ): Effect.Effect<FilesUploadResponse, SlackError> =>
-      Effect.tryPromise({
-        try: () => client.files.upload(args),
-        catch: mapSlackError
-      }).pipe(
-        Effect.tapError(annotateSpanWithError),
-        Effect.withSpan("FilesService.upload", {
-          attributes: { "slack.method": "files.upload" }
         })
       )
 
@@ -310,7 +291,6 @@ export class FilesService extends Effect.Service<FilesService>()("effect-slack/F
       list,
       revokePublicURL,
       sharedPublicURL,
-      upload,
       uploadV2,
       comments: {
         delete_: CommentsDelete_
