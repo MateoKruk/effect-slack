@@ -78,6 +78,6 @@
     "*": "oxfmt --write --no-error-on-unmatched-pattern"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }
