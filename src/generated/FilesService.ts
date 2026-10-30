@@ -156,7 +156,7 @@ export class FilesService extends Effect.Service<FilesService>()("effect-slack/F
       )
 
     /**
-     * Custom method to support a new way of uploading files to Slack. Supports a single file upload Supply: - (required) single file or content - (optional) channel, alt_text, snippet_type, Supports multiple file uploads Supply: - multiple upload_files Will try to honor both single file or content data supplied as well as multiple file uploads property.
+     * Custom method to support a new way of uploading files to Slack. Supports a single file upload Supply: - (required) single file or content - (optional) channel, alt_txt, snippet_type, Supports multiple file uploads Supply: - multiple upload_files Will try to honor both single file or content data supplied as well as multiple file uploads property.
      */
     const uploadV2 = (
       args: FilesUploadV2Arguments
