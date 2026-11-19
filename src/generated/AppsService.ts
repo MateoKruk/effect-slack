@@ -21,6 +21,10 @@ import type {
   AppsManifestValidateResponse,
   AppsUninstallArguments,
   AppsUninstallResponse,
+  AppsUserConnectionBulkUpdateArguments,
+  AppsUserConnectionBulkUpdateResponse,
+  AppsUserConnectionRequestAuthArguments,
+  AppsUserConnectionRequestAuthResponse,
   AppsUserConnectionUpdateArguments,
   AppsUserConnectionUpdateResponse
 } from "@slack/web-api"
@@ -160,6 +164,38 @@ export class AppsService extends Effect.Service<AppsService>()("effect-slack/App
       )
 
     /**
+     * Updates the connection status between an app and many users in one call, for backfilling an existing user base.
+     */
+    const UserConnectionBulkUpdate = (
+      args: AppsUserConnectionBulkUpdateArguments
+    ): Effect.Effect<AppsUserConnectionBulkUpdateResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.apps.user.connection.bulkUpdate(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AppsService.user.connection.bulkUpdate", {
+          attributes: { "slack.method": "apps.user.connection.bulkUpdate" }
+        })
+      )
+
+    /**
+     * Opens or updates a standardized authentication modal for the calling app.
+     */
+    const UserConnectionRequestAuth = (
+      args: AppsUserConnectionRequestAuthArguments
+    ): Effect.Effect<AppsUserConnectionRequestAuthResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.apps.user.connection.requestAuth(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AppsService.user.connection.requestAuth", {
+          attributes: { "slack.method": "apps.user.connection.requestAuth" }
+        })
+      )
+
+    /**
      * Updates the connection status between a user and an app.
      */
     const UserConnectionUpdate = (
@@ -194,6 +230,8 @@ export class AppsService extends Effect.Service<AppsService>()("effect-slack/App
       },
       user: {
         connection: {
+          bulkUpdate: UserConnectionBulkUpdate,
+          requestAuth: UserConnectionRequestAuth,
           update: UserConnectionUpdate
         }
       }

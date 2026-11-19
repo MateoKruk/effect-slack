@@ -5,6 +5,24 @@
 
 import { Effect } from "effect"
 import type {
+  AgentsConversationsArchiveArguments,
+  AgentsConversationsArchiveResponse,
+  AgentsConversationsCreateArguments,
+  AgentsConversationsCreateResponse,
+  AgentsConversationsGetCanvasArguments,
+  AgentsConversationsGetCanvasResponse,
+  AgentsConversationsListViewsArguments,
+  AgentsConversationsListViewsResponse,
+  AgentsConversationsRemoveViewArguments,
+  AgentsConversationsRemoveViewResponse,
+  AgentsConversationsSetCanvasContentArguments,
+  AgentsConversationsSetCanvasContentResponse,
+  AgentsConversationsSetCommandsArguments,
+  AgentsConversationsSetCommandsResponse,
+  AgentsConversationsSetPropertiesArguments,
+  AgentsConversationsSetPropertiesResponse,
+  AgentsConversationsSetViewArguments,
+  AgentsConversationsSetViewResponse,
   AgentsSessionsRenameArguments,
   AgentsSessionsRenameResponse,
   AgentsSessionsSetStatusArguments,
@@ -16,6 +34,150 @@ import { mapSlackError, annotateSpanWithError, type SlackError } from "../intern
 export class AgentsService extends Effect.Service<AgentsService>()("effect-slack/AgentsService", {
   effect: Effect.gen(function* () {
     const client = yield* SlackClient
+
+    /**
+     * Archive a code channel.
+     */
+    const ConversationsArchive = (
+      args: AgentsConversationsArchiveArguments
+    ): Effect.Effect<AgentsConversationsArchiveResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.agents.conversations.archive(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AgentsService.conversations.archive", {
+          attributes: { "slack.method": "agents.conversations.archive" }
+        })
+      )
+
+    /**
+     * Create a dedicated code channel for an agent session.
+     */
+    const ConversationsCreate = (
+      args: AgentsConversationsCreateArguments
+    ): Effect.Effect<AgentsConversationsCreateResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.agents.conversations.create(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AgentsService.conversations.create", {
+          attributes: { "slack.method": "agents.conversations.create" }
+        })
+      )
+
+    /**
+     * Fetch a canvas attached to a code channel.
+     */
+    const ConversationsGetCanvas = (
+      args: AgentsConversationsGetCanvasArguments
+    ): Effect.Effect<AgentsConversationsGetCanvasResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.agents.conversations.getCanvas(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AgentsService.conversations.getCanvas", {
+          attributes: { "slack.method": "agents.conversations.getCanvas" }
+        })
+      )
+
+    /**
+     * List the views currently attached to a code channel.
+     */
+    const ConversationsListViews = (
+      args: AgentsConversationsListViewsArguments
+    ): Effect.Effect<AgentsConversationsListViewsResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.agents.conversations.listViews(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AgentsService.conversations.listViews", {
+          attributes: { "slack.method": "agents.conversations.listViews" }
+        })
+      )
+
+    /**
+     * Remove a view from a code channel.
+     */
+    const ConversationsRemoveView = (
+      args: AgentsConversationsRemoveViewArguments
+    ): Effect.Effect<AgentsConversationsRemoveViewResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.agents.conversations.removeView(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AgentsService.conversations.removeView", {
+          attributes: { "slack.method": "agents.conversations.removeView" }
+        })
+      )
+
+    /**
+     * Replace the full markdown content of a plan canvas attached to a code channel.
+     */
+    const ConversationsSetCanvasContent = (
+      args: AgentsConversationsSetCanvasContentArguments
+    ): Effect.Effect<AgentsConversationsSetCanvasContentResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.agents.conversations.setCanvasContent(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AgentsService.conversations.setCanvasContent", {
+          attributes: { "slack.method": "agents.conversations.setCanvasContent" }
+        })
+      )
+
+    /**
+     * Register the set of agent-defined slash commands for the calling agent in a code channel.
+     */
+    const ConversationsSetCommands = (
+      args: AgentsConversationsSetCommandsArguments
+    ): Effect.Effect<AgentsConversationsSetCommandsResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.agents.conversations.setCommands(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AgentsService.conversations.setCommands", {
+          attributes: { "slack.method": "agents.conversations.setCommands" }
+        })
+      )
+
+    /**
+     * Set properties on a code channel.
+     */
+    const ConversationsSetProperties = (
+      args: AgentsConversationsSetPropertiesArguments
+    ): Effect.Effect<AgentsConversationsSetPropertiesResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.agents.conversations.setProperties(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AgentsService.conversations.setProperties", {
+          attributes: { "slack.method": "agents.conversations.setProperties" }
+        })
+      )
+
+    /**
+     * Create or update a view in a code channel.
+     */
+    const ConversationsSetView = (
+      args: AgentsConversationsSetViewArguments
+    ): Effect.Effect<AgentsConversationsSetViewResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.agents.conversations.setView(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AgentsService.conversations.setView", {
+          attributes: { "slack.method": "agents.conversations.setView" }
+        })
+      )
 
     /**
      * Rename an agent session.
@@ -50,6 +212,17 @@ export class AgentsService extends Effect.Service<AgentsService>()("effect-slack
       )
 
     return {
+      conversations: {
+        archive: ConversationsArchive,
+        create: ConversationsCreate,
+        getCanvas: ConversationsGetCanvas,
+        listViews: ConversationsListViews,
+        removeView: ConversationsRemoveView,
+        setCanvasContent: ConversationsSetCanvasContent,
+        setCommands: ConversationsSetCommands,
+        setProperties: ConversationsSetProperties,
+        setView: ConversationsSetView
+      },
       sessions: {
         rename: SessionsRename,
         setStatus: SessionsSetStatus

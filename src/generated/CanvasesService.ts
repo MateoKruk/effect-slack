@@ -15,6 +15,8 @@ import type {
   CanvasesDeleteResponse,
   CanvasesEditArguments,
   CanvasesEditResponse,
+  CanvasesGetContentArguments,
+  CanvasesGetContentResponse,
   CanvasesSectionsLookupArguments,
   CanvasesSectionsLookupResponse
 } from "@slack/web-api"
@@ -74,6 +76,22 @@ export class CanvasesService extends Effect.Service<CanvasesService>()("effect-s
       )
 
     /**
+     * Get the content of a canvas as markdown (default) or HTML.
+     */
+    const getContent = (
+      args: CanvasesGetContentArguments
+    ): Effect.Effect<CanvasesGetContentResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.canvases.getContent(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("CanvasesService.getContent", {
+          attributes: { "slack.method": "canvases.getContent" }
+        })
+      )
+
+    /**
      * Remove access to a canvas for specified entities.
      */
     const AccessDelete_ = (
@@ -125,6 +143,7 @@ export class CanvasesService extends Effect.Service<CanvasesService>()("effect-s
       create,
       delete_,
       edit,
+      getContent,
       access: {
         delete_: AccessDelete_,
         set: AccessSet

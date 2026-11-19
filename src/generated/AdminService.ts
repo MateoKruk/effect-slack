@@ -19,6 +19,12 @@ import type {
   AdminAppsConfigLookupResponse,
   AdminAppsConfigSetArguments,
   AdminAppsConfigSetResponse,
+  AdminAppsMcpServersListArguments,
+  AdminAppsMcpServersListResponse,
+  AdminAppsMcpServersPermissionsListArguments,
+  AdminAppsMcpServersPermissionsListResponse,
+  AdminAppsMcpServersPermissionsSetArguments,
+  AdminAppsMcpServersPermissionsSetResponse,
   AdminAppsRequestsCancelArguments,
   AdminAppsRequestsCancelResponse,
   AdminAppsRequestsListArguments,
@@ -125,6 +131,14 @@ import type {
   AdminRolesListAssignmentsResponse,
   AdminRolesRemoveAssignmentsArguments,
   AdminRolesRemoveAssignmentsResponse,
+  AdminSlackbotSkillsListArguments,
+  AdminSlackbotSkillsListResponse,
+  AdminSlackbotSkillsPublishArguments,
+  AdminSlackbotSkillsPublishResponse,
+  AdminSlackbotSkillsSetAutoEnabledArguments,
+  AdminSlackbotSkillsSetAutoEnabledResponse,
+  AdminSlackbotSkillsUnpublishArguments,
+  AdminSlackbotSkillsUnpublishResponse,
   AdminTeamsAdminsListArguments,
   AdminTeamsAdminsListResponse,
   AdminTeamsCreateArguments,
@@ -346,6 +360,54 @@ export class AdminService extends Effect.Service<AdminService>()("effect-slack/A
         Effect.tapError(annotateSpanWithError),
         Effect.withSpan("AdminService.apps.config.set", {
           attributes: { "slack.method": "admin.apps.config.set" }
+        })
+      )
+
+    /**
+     * List third-party app MCP servers approved for an organization.
+     */
+    const AppsMcpServersList = (
+      args?: AdminAppsMcpServersListArguments
+    ): Effect.Effect<AdminAppsMcpServersListResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.admin.apps.mcp.servers.list(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AdminService.apps.mcp.servers.list", {
+          attributes: { "slack.method": "admin.apps.mcp.servers.list" }
+        })
+      )
+
+    /**
+     * List MCP servers for an app with their access control permissions.
+     */
+    const AppsMcpServersPermissionsList = (
+      args: AdminAppsMcpServersPermissionsListArguments
+    ): Effect.Effect<AdminAppsMcpServersPermissionsListResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.admin.apps.mcp.servers.permissions.list(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AdminService.apps.mcp.servers.permissions.list", {
+          attributes: { "slack.method": "admin.apps.mcp.servers.permissions.list" }
+        })
+      )
+
+    /**
+     * Set the access control permission for who can use an MCP server.
+     */
+    const AppsMcpServersPermissionsSet = (
+      args: AdminAppsMcpServersPermissionsSetArguments
+    ): Effect.Effect<AdminAppsMcpServersPermissionsSetResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.admin.apps.mcp.servers.permissions.set(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AdminService.apps.mcp.servers.permissions.set", {
+          attributes: { "slack.method": "admin.apps.mcp.servers.permissions.set" }
         })
       )
 
@@ -1166,6 +1228,70 @@ export class AdminService extends Effect.Service<AdminService>()("effect-slack/A
       )
 
     /**
+     * Lists metadata for Slackbot skills owned by an organization.
+     */
+    const SlackbotSkillsList = (
+      args?: AdminSlackbotSkillsListArguments
+    ): Effect.Effect<AdminSlackbotSkillsListResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.admin.slackbot.skills.list(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AdminService.slackbot.skills.list", {
+          attributes: { "slack.method": "admin.slackbot.skills.list" }
+        })
+      )
+
+    /**
+     * Publishes Slackbot skills to an organization's catalog.
+     */
+    const SlackbotSkillsPublish = (
+      args: AdminSlackbotSkillsPublishArguments
+    ): Effect.Effect<AdminSlackbotSkillsPublishResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.admin.slackbot.skills.publish(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AdminService.slackbot.skills.publish", {
+          attributes: { "slack.method": "admin.slackbot.skills.publish" }
+        })
+      )
+
+    /**
+     * Sets who a Slackbot skill is automatically turned on for.
+     */
+    const SlackbotSkillsSetAutoEnabled = (
+      args: AdminSlackbotSkillsSetAutoEnabledArguments
+    ): Effect.Effect<AdminSlackbotSkillsSetAutoEnabledResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.admin.slackbot.skills.setAutoEnabled(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AdminService.slackbot.skills.setAutoEnabled", {
+          attributes: { "slack.method": "admin.slackbot.skills.setAutoEnabled" }
+        })
+      )
+
+    /**
+     * Removes Slackbot skills from the org catalog, preserving access, libraries, and deployments.
+     */
+    const SlackbotSkillsUnpublish = (
+      args: AdminSlackbotSkillsUnpublishArguments
+    ): Effect.Effect<AdminSlackbotSkillsUnpublishResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.admin.slackbot.skills.unpublish(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AdminService.slackbot.skills.unpublish", {
+          attributes: { "slack.method": "admin.slackbot.skills.unpublish" }
+        })
+      )
+
+    /**
      * Create an Enterprise team.
      */
     const TeamsCreate = (
@@ -1760,6 +1886,15 @@ export class AdminService extends Effect.Service<AdminService>()("effect-slack/A
           lookup: AppsConfigLookup,
           set: AppsConfigSet
         },
+        mcp: {
+          servers: {
+            list: AppsMcpServersList,
+            permissions: {
+              list: AppsMcpServersPermissionsList,
+              set: AppsMcpServersPermissionsSet
+            }
+          }
+        },
         requests: {
           cancel: AppsRequestsCancel,
           list: AppsRequestsList
@@ -1841,6 +1976,14 @@ export class AdminService extends Effect.Service<AdminService>()("effect-slack/A
         addAssignments: RolesAddAssignments,
         listAssignments: RolesListAssignments,
         removeAssignments: RolesRemoveAssignments
+      },
+      slackbot: {
+        skills: {
+          list: SlackbotSkillsList,
+          publish: SlackbotSkillsPublish,
+          setAutoEnabled: SlackbotSkillsSetAutoEnabled,
+          unpublish: SlackbotSkillsUnpublish
+        }
       },
       teams: {
         create: TeamsCreate,
