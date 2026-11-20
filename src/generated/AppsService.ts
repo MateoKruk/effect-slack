@@ -9,6 +9,10 @@ import type {
   AppsConnectionsOpenResponse,
   AppsEventAuthorizationsListArguments,
   AppsEventAuthorizationsListResponse,
+  AppsIconSetArguments,
+  AppsIconSetResponse,
+  AppsManagedPermissionsSetArguments,
+  AppsManagedPermissionsSetResponse,
   AppsManifestCreateArguments,
   AppsManifestCreateResponse,
   AppsManifestDeleteArguments,
@@ -21,6 +25,10 @@ import type {
   AppsManifestValidateResponse,
   AppsUninstallArguments,
   AppsUninstallResponse,
+  AppsUserConnectionBulkUpdateArguments,
+  AppsUserConnectionBulkUpdateResponse,
+  AppsUserConnectionRequestAuthArguments,
+  AppsUserConnectionRequestAuthResponse,
   AppsUserConnectionUpdateArguments,
   AppsUserConnectionUpdateResponse
 } from "@slack/web-api"
@@ -76,6 +84,38 @@ export class AppsService extends Effect.Service<AppsService>()("effect-slack/App
         Effect.tapError(annotateSpanWithError),
         Effect.withSpan("AppsService.event.authorizations.list", {
           attributes: { "slack.method": "apps.event.authorizations.list" }
+        })
+      )
+
+    /**
+     * Sets the app icon.
+     */
+    const IconSet = (
+      args: AppsIconSetArguments
+    ): Effect.Effect<AppsIconSetResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.apps.icon.set(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AppsService.icon.set", {
+          attributes: { "slack.method": "apps.icon.set" }
+        })
+      )
+
+    /**
+     * Set who can interact with a managed app.
+     */
+    const ManagedPermissionsSet = (
+      args: AppsManagedPermissionsSetArguments
+    ): Effect.Effect<AppsManagedPermissionsSetResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.apps.managed.permissions.set(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AppsService.managed.permissions.set", {
+          attributes: { "slack.method": "apps.managed.permissions.set" }
         })
       )
 
@@ -160,6 +200,38 @@ export class AppsService extends Effect.Service<AppsService>()("effect-slack/App
       )
 
     /**
+     * Updates the connection status between an app and many users in one call, for backfilling an existing user base.
+     */
+    const UserConnectionBulkUpdate = (
+      args: AppsUserConnectionBulkUpdateArguments
+    ): Effect.Effect<AppsUserConnectionBulkUpdateResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.apps.user.connection.bulkUpdate(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AppsService.user.connection.bulkUpdate", {
+          attributes: { "slack.method": "apps.user.connection.bulkUpdate" }
+        })
+      )
+
+    /**
+     * Opens or updates a standardized authentication modal for the calling app.
+     */
+    const UserConnectionRequestAuth = (
+      args: AppsUserConnectionRequestAuthArguments
+    ): Effect.Effect<AppsUserConnectionRequestAuthResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.apps.user.connection.requestAuth(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AppsService.user.connection.requestAuth", {
+          attributes: { "slack.method": "apps.user.connection.requestAuth" }
+        })
+      )
+
+    /**
      * Updates the connection status between a user and an app.
      */
     const UserConnectionUpdate = (
@@ -185,6 +257,14 @@ export class AppsService extends Effect.Service<AppsService>()("effect-slack/App
           list: EventAuthorizationsList
         }
       },
+      icon: {
+        set: IconSet
+      },
+      managed: {
+        permissions: {
+          set: ManagedPermissionsSet
+        }
+      },
       manifest: {
         create: ManifestCreate,
         delete_: ManifestDelete_,
@@ -194,6 +274,8 @@ export class AppsService extends Effect.Service<AppsService>()("effect-slack/App
       },
       user: {
         connection: {
+          bulkUpdate: UserConnectionBulkUpdate,
+          requestAuth: UserConnectionRequestAuth,
           update: UserConnectionUpdate
         }
       }
