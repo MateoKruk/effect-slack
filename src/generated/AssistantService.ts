@@ -5,6 +5,10 @@
 
 import { Effect } from "effect"
 import type {
+  AssistantSearchContextArguments,
+  AssistantSearchContextResponse,
+  AssistantSearchInfoArguments,
+  AssistantSearchInfoResponse,
   AssistantThreadsSetStatusArguments,
   AssistantThreadsSetStatusResponse,
   AssistantThreadsSetSuggestedPromptsArguments,
@@ -18,6 +22,38 @@ import { mapSlackError, annotateSpanWithError, type SlackError } from "../intern
 export class AssistantService extends Effect.Service<AssistantService>()("effect-slack/AssistantService", {
   effect: Effect.gen(function* () {
     const client = yield* SlackClient
+
+    /**
+     * Searches messages, files, channels and users across your Slack organization.
+     */
+    const SearchContext = (
+      args: AssistantSearchContextArguments
+    ): Effect.Effect<AssistantSearchContextResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.assistant.search.context(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AssistantService.search.context", {
+          attributes: { "slack.method": "assistant.search.context" }
+        })
+      )
+
+    /**
+     * Returns search capabilities on a given team.
+     */
+    const SearchInfo = (
+      args?: AssistantSearchInfoArguments
+    ): Effect.Effect<AssistantSearchInfoResponse, SlackError> =>
+      Effect.tryPromise({
+        try: () => client.assistant.search.info(args),
+        catch: mapSlackError
+      }).pipe(
+        Effect.tapError(annotateSpanWithError),
+        Effect.withSpan("AssistantService.search.info", {
+          attributes: { "slack.method": "assistant.search.info" }
+        })
+      )
 
     /**
      * Set loading status to indicate that the app is building a response.
@@ -68,6 +104,10 @@ export class AssistantService extends Effect.Service<AssistantService>()("effect
       )
 
     return {
+      search: {
+        context: SearchContext,
+        info: SearchInfo
+      },
       threads: {
         setStatus: ThreadsSetStatus,
         setSuggestedPrompts: ThreadsSetSuggestedPrompts,
